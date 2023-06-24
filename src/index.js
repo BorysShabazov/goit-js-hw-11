@@ -25,11 +25,9 @@ async function hendleInput(evt) {
   try {
     query = evt.target.searchQuery.value;
     evt.target.searchQuery.value = '';
-    const data = await axios
-      .get(`${BASE_URL}&key=${API_KEY}&q=${query}&page=${pageNow}`)
-      .then(({ data }) => {
-        return data;
-      });
+    const { data } = await axios.get(
+      `${BASE_URL}&key=${API_KEY}&q=${query}&page=${pageNow}`
+    );
 
     if (data.hits.length === 0) {
       return Notify.warning(
