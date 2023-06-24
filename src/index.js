@@ -31,15 +31,21 @@ async function hendleInput(evt) {
         return data;
       });
 
+    if (data.hits.length === 0) {
+      return Notify.warning(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+    }
+
     galleryEl.innerHTML = await createContent(data.hits);
+
+    Notify.success(`Hooray! We found ${data.totalHits} images.`);
 
     new SimpleLightbox('.gallery a', { captionDelay: 250 });
 
     observer.observe(guardEl);
   } catch (err) {
-    Notify.warning(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
+    Notify.warning(err.message);
   }
 }
 
