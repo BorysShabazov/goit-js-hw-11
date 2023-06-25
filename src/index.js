@@ -26,12 +26,15 @@ async function hendleInput(evt) {
   evt.preventDefault();
   try {
     query = evt.target.searchQuery.value;
+    if (query === '') {
+      throw new Error(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+    }
     evt.target.searchQuery.value = '';
     const { data } = await axios.get(
       `${BASE_URL}&key=${API_KEY}&q=${query}&page=${pageNow}`
     );
-
-    console.dir(data);
 
     hits = data.hits.length;
     totalHitsEl = data.totalHits;
