@@ -12,6 +12,8 @@ const BASE_URL =
 const API_KEY = '37785786-64a8ca81d7f9f5d8dae241bba';
 let pageNow = 1;
 let query = '';
+let hits = 0;
+let totalHitsEl = 0;
 
 const options = { root: null, rootMargin: '500px', threshold: 1.0 };
 let observer = new IntersectionObserver(loadMore, options);
@@ -28,6 +30,11 @@ async function hendleInput(evt) {
     const { data } = await axios.get(
       `${BASE_URL}&key=${API_KEY}&q=${query}&page=${pageNow}`
     );
+
+    console.dir(data);
+
+    hits = data.hits.length;
+    totalHitsEl = data.totalHits;
 
     if (data.hits.length === 0) {
       return Notify.warning(
@@ -84,14 +91,17 @@ function createContent(arr) {
 
 async function loadMore(entries) {
   try {
+    if (hits >= totalHitsEl) {
+      observer.unobserve(guardEl);
+    }
     await entries.forEach(async entry => {
       if (entry.isIntersecting) {
         pageNow += 1;
-        const data = await axios
-          .get(`${BASE_URL}&key=${API_KEY}&q=${query}&page=${pageNow}`)
-          .then(({ data }) => {
-            return data;
-          });
+        const { data } = await axios.get(
+          `${BASE_URL}&key=${API_KEY}&q=${query}&page=${pageNow}`
+        );
+
+        hits += data.hits.length;
 
         galleryEl.insertAdjacentHTML('beforeend', createContent(data.hits));
 
